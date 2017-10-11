@@ -99,6 +99,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         // If not prevented via guacBeforeKeydown, fire corresponding keydown event
         var guacKeydownEvent = $scope.$broadcast('guacKeydown', keysym, keyboard);
+        //alert(keysym);
+        if((keysym == 118 && keyboard.modifiers.ctrl) || (keysym == 118 && guac_keyboard.modifiers.ctrl)){
+            return guacKeydownEvent.defaultPrevented;
+        }
         return !guacKeydownEvent.defaultPrevented;
 
     };
@@ -135,10 +139,20 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         });
     };
 
+
+    function setGuacClipboard(e)
+	{
+               console.log("paste triggered");	
+               clipboardService.pasteGuacClipboard(e).then(function clipboardRead(data) {
+            $scope.$broadcast('guacClipboard', data);
+        });
+	}
+
     // Attempt to read the clipboard if it may have changed
     $window.addEventListener('load',  checkClipboard, true);
     $window.addEventListener('copy',  checkClipboard, true);
     $window.addEventListener('cut',   checkClipboard, true);
+    $window.addEventListener('paste', setGuacClipboard, true);
     $window.addEventListener('focus', function focusGained(e) {
 
         // Only recheck clipboard if it's the window itself that gained focus

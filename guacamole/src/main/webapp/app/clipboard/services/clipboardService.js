@@ -379,6 +379,70 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
     };
 
+
+
+    service.pasteGuacClipboard = function pasteGuacClipboard(e)
+	{
+		var deferred = $q.defer();
+		var data = e.clipboardData.getData("text/plain");
+		$window.setTimeout(function deferredClipboardRead() {
+			
+				// Track the originally-focused element prior to changing focus
+				var originalElement = document.activeElement;
+
+				// Clear and select the clipboard DOM element
+				clipboardContent.innerHTML = '';
+				clipboardContent.focus();
+				
+				// Attempt paste local clipboard into clipboard DOM element
+				if (document.activeElement === clipboardContent) {
+					// If the pasted data is a single image, resolve with a blob
+					// containing that image
+					var currentImage = service.getImageContent(clipboardContent);
+					if (currentImage) {
+
+						// Convert the image's data URL into a blob
+						var blob = service.parseDataURL(currentImage);
+						if (blob) {
+							deferred.resolve(new ClipboardData({
+								type : blob.type,
+								data : blob
+							}));
+						}
+
+						// Reject if conversion fails
+						else
+							deferred.reject();
+
+					} // end if clipboard is an image
+
+					// Otherwise, assume the clipboard contains plain text		
+					else
+					{
+						if (window.clipboardData) 
+							clipboardContent.textContent = window.clipboardData.getData('Text');
+						else
+							clipboardContent.textContent = e.clipboardData.getData("text/plain");
+						deferred.resolve(new ClipboardData({
+							type : 'text/plain',
+							data : data
+						}));
+					}
+					
+				}
+				// Otherwise, reading from the clipboard has failed
+				else
+					deferred.reject();
+            // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+            // restoring whichever element was originally focused
+            clipboardContent.blur();
+            originalElement.focus();
+            popSelection();
+
+        }, CLIPBOARD_READ_DELAY);
+		
+		return deferred.promise;
+	};
     /**
      * Get the current value of the local clipboard.
      *
