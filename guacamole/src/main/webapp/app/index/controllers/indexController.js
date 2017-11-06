@@ -145,6 +145,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
                console.log("paste triggered");	
                clipboardService.pasteGuacClipboard(e).then(function clipboardRead(data) {
             $scope.$broadcast('guacClipboard', data);
+            console.log("soft event triggered");
+            $scope.$broadcast('guacSyntheticKeydown', 8);
+            $scope.$broadcast('guacSyntheticKeyup', 8);
+            $scope.$broadcast('guacSyntheticKeydown', 65507);
+            $scope.$broadcast('guacSyntheticKeydown', 65505);
+            $scope.$broadcast('guacSyntheticKeydown', 86);
+            $scope.$broadcast('guacSyntheticKeyup', 86);
+            $scope.$broadcast('guacSyntheticKeyup', 65505);
+            $scope.$broadcast('guacSyntheticKeyup', 65507); 
         });
 	}
 

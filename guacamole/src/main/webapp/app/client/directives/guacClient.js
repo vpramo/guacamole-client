@@ -435,11 +435,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             // Universally handle all synthetic keydown events
             $scope.$on('guacSyntheticKeydown', function syntheticKeydownListener(event, keysym) {
+                console.log(keysym)
                 client.sendKeyEvent(1, keysym);
             });
             
             // Universally handle all synthetic keyup events
             $scope.$on('guacSyntheticKeyup', function syntheticKeyupListener(event, keysym) {
+                console.log(keysym)
                 client.sendKeyEvent(0, keysym);
             });
             
